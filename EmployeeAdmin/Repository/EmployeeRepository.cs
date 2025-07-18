@@ -18,5 +18,10 @@ namespace EmployeeAdmin.Repository
             var result = await _context.Employees.ToListAsync();
             return result;
         }
+        public async Task<Employee> GetEmployeeById(long id)
+        {
+            var result = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
+            return result;
+        }
     }
 }

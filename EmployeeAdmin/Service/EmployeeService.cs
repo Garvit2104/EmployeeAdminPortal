@@ -14,25 +14,40 @@ public class EmployeeService : IEmployeeService
             _employeeRepository = repository;
         }
 
-        public async Task<List<EmployeeResponse>> GetAllEmployees()
+        public async Task<EmployeeResponse> GetAllEmployees()
         {
             List<Employee> employees = await _employeeRepository.GetAllEmployees();
-            List<EmployeeResponse> employeeResponses = new();
-
             foreach (Employee emp in employees)
             {
-                EmployeeResponse employeeResponse = new EmployeeResponse();
-                employeeResponse.Id = emp.Id;
-                employeeResponse.FirstName = emp.FirstName;
-                employeeResponse.LastName = emp.LastName;
-                employeeResponse.Email = emp.Email;
-                employeeResponse.Salary = emp.Salary;
-                employeeResponses.Add(employeeResponse);
+                EmployeeResponse employeeResponseDTO = new EmployeeResponse();
+                employeeResponseDTO.Id = emp.Id;
+                employeeResponseDTO.FirstName = emp.FirstName;
+                employeeResponseDTO.LastName = emp.LastName;
+                employeeResponseDTO.Email = emp.Email;
+                employeeResponseDTO.Salary = emp.Salary;
+                
             }
 
             // The method signature expects to return List<Employee>, but you are building List<EmployeeResponse>.
             // You may want to return employeeResponse or change the method signature.
             return employeeResponses;
+        }
+        public async Task<List<EmployeeResponse>> GetEmployeeById(long id)
+        {
+            List<Employee> employees = await _employeeRepository.GetAllEmployees();
+            List<EmployeeResponse> employeeResponsesDTO = new ();
+            foreach(Employee emp in employees)
+            {
+                EmployeeResponse employeeResponseDTO = new EmployeeResponse();
+                employeeResponseDTO.Id = emp.Id;
+                employeeResponseDTO.FirstName = emp.FirstName;
+                employeeResponseDTO.LastName = emp.LastName;
+                employeeResponseDTO.Email = emp.Email;
+                employeeResponseDTO.Salary = emp.Salary;
+
+                employeeResponsesDTO.Add(employeeResponseDTO);
+            }
+            return  employeeResponsesDTO;
         }
     }
 }
