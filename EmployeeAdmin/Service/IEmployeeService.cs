@@ -6,5 +6,7 @@ namespace EmployeeAdmin.Service
     public interface IEmployeeService
     {
          Task<List<EmployeeResponse>> GetAllEmployees();
+
+        Task<EmployeeResponse> GetEmployeeById(long id);
     }
 }
