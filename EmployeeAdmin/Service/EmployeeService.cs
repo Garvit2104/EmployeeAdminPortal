@@ -2,6 +2,8 @@
 using EmployeeAdmin.Models;
 using EmployeeAdmin.DTOs;
 using System.Collections;
+using Microsoft.Identity.Client;
+using System.Reflection.Metadata.Ecma335;
 namespace EmployeeAdmin.Service
 {
    
@@ -14,9 +16,10 @@ public class EmployeeService : IEmployeeService
             _employeeRepository = repository;
         }
 
-        public async Task<EmployeeResponse> GetAllEmployees()
+        public async Task<List<EmployeeResponse>> GetAllEmployees()
         {
             List<Employee> employees = await _employeeRepository.GetAllEmployees();
+            List<EmployeeResponse> employeeResponses = new List<EmployeeResponse>();
             foreach (Employee emp in employees)
             {
                 EmployeeResponse employeeResponseDTO = new EmployeeResponse();
@@ -25,19 +28,14 @@ public class EmployeeService : IEmployeeService
                 employeeResponseDTO.LastName = emp.LastName;
                 employeeResponseDTO.Email = emp.Email;
                 employeeResponseDTO.Salary = emp.Salary;
-                
+                employeeResponses.Add(employeeResponseDTO);
             }
-
-            // The method signature expects to return List<Employee>, but you are building List<EmployeeResponse>.
-            // You may want to return employeeResponse or change the method signature.
             return employeeResponses;
         }
-        public async Task<List<EmployeeResponse>> GetEmployeeById(long id)
+        public async Task<EmployeeResponse> GetEmployeeById(long id)
         {
-            List<Employee> employees = await _employeeRepository.GetAllEmployees();
-            List<EmployeeResponse> employeeResponsesDTO = new ();
-            foreach(Employee emp in employees)
-            {
+            Employee emp = await _employeeRepository.GetEmployeeById(id);
+            
                 EmployeeResponse employeeResponseDTO = new EmployeeResponse();
                 employeeResponseDTO.Id = emp.Id;
                 employeeResponseDTO.FirstName = emp.FirstName;
@@ -45,9 +43,66 @@ public class EmployeeService : IEmployeeService
                 employeeResponseDTO.Email = emp.Email;
                 employeeResponseDTO.Salary = emp.Salary;
 
-                employeeResponsesDTO.Add(employeeResponseDTO);
-            }
-            return  employeeResponsesDTO;
+            return employeeResponseDTO;
         }
+
+        public async Task<bool> DeleteEmployee(long id)
+        {
+           return await _employeeRepository.DeleteEmployee(id);
+            
+        
+        }
+        public async Task<EmployeeResponse> AddEmployee(AddEmployeeDto employeeDto)
+        {
+            Employee employeeEntity = new()
+            {
+                FirstName = employeeDto.FirstName,
+                LastName = employeeDto.LastName,
+                Email = employeeDto.Email,
+                Salary = employeeDto.Salary,
+                Password = employeeDto.Password
+            };
+            Employee employee = _employeeRepository.AddEmployee(employeeEntity);
+            EmployeeResponse employeeResponse = new()
+            {
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Email = employee.Email,
+                Password = employee.Password,
+                Salary = employee.Salary
+            };
+
+            return employeeResponse;
+    
+        }
+        public EmployeeResponse UpdateEmployee(long id, AddEmployeeDto addEmployeeDto)
+        {
+            Employee employee = _employeeRepository.GetEmployeeById(id).Result;
+            if (employee == null)
+            {
+                return null;
+            }
+            
+            employee.FirstName = addEmployeeDto.FirstName;  
+            employee.LastName = addEmployeeDto.LastName;
+            employee.Email = addEmployeeDto.Email;
+            employee.Salary = addEmployeeDto.Salary;
+            employee.Password = addEmployeeDto.Password;
+
+            employee = _employeeRepository.UpdateEmployee(employee);
+
+            EmployeeResponse employeeResponse = new()
+            {
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Email = employee.Email,
+                Salary = employee.Salary,
+                Password = employee.Password
+            };
+            return employeeResponse;
+        }
+
+
     }
-}
+    }
+

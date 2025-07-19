@@ -58,6 +58,10 @@ public partial class EmployeePortalContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("Last_Name");
+            entity.Property(e => e.Password)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasDefaultValue("password@123");
             entity.Property(e => e.Salary).HasColumnType("decimal(10, 2)");
 
             entity.HasOne(d => d.Department).WithMany(p => p.Employees)

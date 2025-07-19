@@ -17,5 +17,7 @@ public partial class Employee
 
     public long? DepartmentId { get; set; }
 
+    public string Password { get; set; } = null!;
+
     public virtual Department? Department { get; set; }
 }
